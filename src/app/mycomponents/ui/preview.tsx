@@ -1,6 +1,11 @@
 "use client";
 import useTextStore from "@/store/textStore";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import CustomLink from "../customElements/customLink";
+import CustomCode from "../customElements/customeCode";
+import CustomListItem from "../customElements/customList";
+import CustomUL from "../customElements/customUL";
 
 const Preview = () => {
   const text = useTextStore((state) => state.text);
@@ -10,7 +15,17 @@ const Preview = () => {
         # Preview of your Markdown
       </p>
       <div className="px-4 overflow-auto">
-        <Markdown>{text}</Markdown>
+        <Markdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            a: CustomLink,
+            code: CustomCode,
+            ul: CustomUL,
+            li: CustomListItem,
+          }}
+        >
+          {text}
+        </Markdown>
       </div>
     </div>
   );
