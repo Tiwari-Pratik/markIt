@@ -5,6 +5,7 @@
  */
 import { Button } from "@/components/ui/button";
 import ModeToggle from "../theme/mode-toggle";
+import Link from "next/link";
 
 const Navbar = () => {
   return (
@@ -14,7 +15,9 @@ const Navbar = () => {
     >
       <div className="container px-4 md:px-6">
         <div className="flex h-14 items-center">
-          <span className="text-lg font-bold text-primary">.markIt</span>
+          <Link href="/">
+            <span className="text-lg font-bold text-primary">.markIt</span>
+          </Link>
           <div className="ml-auto flex items-center gap-4">
             <ModeToggle />
           </div>
