@@ -16,8 +16,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { LoginState } from "@/lib/schema";
+import { useFormState } from "react-dom";
+import { loginUser } from "@/lib/actions";
 
 export default function Login() {
+  const initialState: LoginState = { message: null, errors: {} };
+  const [state, dispatch] = useFormState(loginUser, initialState);
+
   return (
     <div
       key="1"
@@ -30,9 +36,7 @@ export default function Login() {
             <CardDescription>
               Enter your email below to login to your account.
             </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-start gap-4">
+            <div className="flex justify-start gap-4 mt-2">
               <Button className="w-12 h-12 rounded-full bg-[#24292e] flex items-center justify-center">
                 <GithubIcon className="text-white" />
               </Button>
@@ -40,28 +44,63 @@ export default function Login() {
                 <ChromeIcon className="text-white" />
               </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                placeholder="m@example.com"
-                required
-                type="email"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                required
-                type="password"
-                placeholder="********"
-              />
-            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form aria-describedby="custom-error-message" action={dispatch}>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  placeholder="m@example.com"
+                  required
+                  type="email"
+                  aria-describedby="email-error"
+                />
+              </div>
+              <div id="email-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.email &&
+                  state.errors?.email?.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  required
+                  type="password"
+                  placeholder="********"
+                  aria-describedby="password-error"
+                />
+              </div>
+              <div id="password-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.password &&
+                  state.errors?.password?.map((error: string) => (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+              <div
+                id="custom-error-message"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {state.message && (
+                  <p className="mt-2 text-sm text-red-500">{state.message}</p>
+                )}
+              </div>
+              <CardFooter className="mt-8 flex gap-2">
+                <Button type="submit" className="flex-1">
+                  Sign in
+                </Button>
+              </CardFooter>
+            </form>
           </CardContent>
-          <CardFooter className="flex gap-2">
-            <Button className="flex-1">Sign in</Button>
-          </CardFooter>
         </Card>
       </div>
     </div>

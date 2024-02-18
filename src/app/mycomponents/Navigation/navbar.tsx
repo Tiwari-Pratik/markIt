@@ -6,8 +6,16 @@
 import { Button } from "@/components/ui/button";
 import ModeToggle from "../theme/mode-toggle";
 import Link from "next/link";
+import { auth } from "../../../../auth";
+import { logoutUser } from "@/lib/actions";
 
-const Navbar = () => {
+const Navbar = async () => {
+  const session = await auth();
+  const isLoggedIn = session?.user;
+
+  const clickHandler = async () => {
+    await logoutUser();
+  };
   return (
     <nav
       key="1"
@@ -21,6 +29,11 @@ const Navbar = () => {
           <div className="ml-auto flex items-center gap-4">
             <ModeToggle />
           </div>
+          {isLoggedIn && (
+            <form action={logoutUser}>
+              <Button className="ml-4">Signout</Button>
+            </form>
+          )}
         </div>
       </div>
     </nav>

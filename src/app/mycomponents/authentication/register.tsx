@@ -19,18 +19,19 @@ import { Button } from "@/components/ui/button";
 import { useFormState } from "react-dom";
 
 import { registerUser } from "@/lib/actions";
+import { RegisterState } from "@/lib/schema";
 
-interface RegisterFormState {
-  message?: string | null;
-  errors?: {
-    email?: string[];
-    password?: string[];
-    confirmPassword?: string[];
-  };
-}
+// interface RegisterFormState {
+//   message?: string | null;
+//   errors?: {
+//     email?: string[];
+//     password?: string[];
+//     confirmPassword?: string[];
+//   };
+// }
 
 export default function Register() {
-  const initialState: RegisterFormState = { message: null, errors: {} };
+  const initialState: RegisterState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(registerUser, initialState);
   return (
     <div
@@ -110,7 +111,7 @@ export default function Register() {
                   ))}
               </div>
 
-              <CardFooter className="mt-8">
+              <CardFooter className="mt-8 flex gap-2">
                 <Button className="w-full" type="submit">
                   Register
                 </Button>
@@ -120,7 +121,7 @@ export default function Register() {
                 aria-live="polite"
                 aria-atomic="true"
               >
-                {state.errors && (
+                {state.message && (
                   <p className="mt-2 text-sm text-red-500">{state.message}</p>
                 )}
               </div>
