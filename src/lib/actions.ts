@@ -141,11 +141,28 @@ export const loginUser = async (prevState: LoginState, formData: FormData) => {
     }
     throw error;
   }
+  return { message: null };
 };
 
 export const logoutUser = async () => {
   try {
     await signOut();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const githubLogin = async () => {
+  try {
+    await signIn("github", { redirectTo: DEFAULT_LOGIN_REDIRECT });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const googleLogin = async () => {
+  try {
+    await signIn("google", { redirectTo: DEFAULT_LOGIN_REDIRECT });
   } catch (error) {
     throw error;
   }

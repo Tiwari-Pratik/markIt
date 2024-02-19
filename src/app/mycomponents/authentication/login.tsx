@@ -18,11 +18,29 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoginState } from "@/lib/schema";
 import { useFormState } from "react-dom";
-import { loginUser } from "@/lib/actions";
+import { githubLogin, googleLogin, loginUser } from "@/lib/actions";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Login() {
   const initialState: LoginState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(loginUser, initialState);
+
+  const searchParams = useSearchParams();
+  const urlError = searchParams.get("error");
+  const router = useRouter();
+
+  if (urlError) {
+    router.replace(`/login-error?error=${urlError}`);
+  }
+
+  const githubClickHandler = async () => {
+    await githubLogin();
+  };
+
+  const googleClickHandler = async () => {
+    await googleLogin();
+  };
 
   return (
     <div
@@ -37,10 +55,16 @@ export default function Login() {
               Enter your email below to login to your account.
             </CardDescription>
             <div className="flex justify-start gap-4 mt-2">
-              <Button className="w-12 h-12 rounded-full bg-[#24292e] flex items-center justify-center">
+              <Button
+                className="w-12 h-12 rounded-full bg-[#24292e] flex items-center justify-center"
+                onClick={githubClickHandler}
+              >
                 <GithubIcon className="text-white" />
               </Button>
-              <Button className="w-12 h-12 rounded-full bg-[#ea4335] flex items-center justify-center">
+              <Button
+                className="w-12 h-12 rounded-full bg-[#ea4335] flex items-center justify-center"
+                onClick={googleClickHandler}
+              >
                 <ChromeIcon className="text-white" />
               </Button>
             </div>
@@ -100,6 +124,20 @@ export default function Login() {
                 </Button>
               </CardFooter>
             </form>
+
+            <CardFooter>
+              <p className="text-sm">
+                Don't have an account. Register{" "}
+                <span>
+                  <Link
+                    href="/register"
+                    className="ml-2 px-4 py-2 bg-primary text-sm text-white rounded-md"
+                  >
+                    Here
+                  </Link>
+                </span>
+              </p>
+            </CardFooter>
           </CardContent>
         </Card>
       </div>

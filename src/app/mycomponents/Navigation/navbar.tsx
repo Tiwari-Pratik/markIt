@@ -13,9 +13,9 @@ const Navbar = async () => {
   const session = await auth();
   const isLoggedIn = session?.user;
 
-  const clickHandler = async () => {
-    await logoutUser();
-  };
+  // const clickHandler = async () => {
+  //   await logoutUser();
+  // };
   return (
     <nav
       key="1"

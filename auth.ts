@@ -7,6 +7,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import { LoginFormSchema } from "@/lib/schema";
 import { getUserByEmail } from "@/lib/data";
+// import "next-auth/jwt";
+// import "next-auth";
 
 import bcrypt from "bcryptjs";
 
