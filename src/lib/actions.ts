@@ -13,6 +13,7 @@ import {
 import { signIn, signOut } from "../../auth";
 import { DEFAULT_LOGIN_REDIRECT } from "./myRoutes";
 import { AuthError } from "next-auth";
+import { generateVerificationToken } from "./tokens";
 
 // const LoginFormSchema = z.object({
 //   email: z
@@ -106,7 +107,10 @@ export const registerUser = async (
   //   message: "User created successfully",
   // };
   // TODO: send verification token email
-  redirect("/");
+
+  const verificationToken = await generateVerificationToken(email);
+  return { message: "Confirmation Email sent !" };
+  // redirect("/");
 };
 
 export const loginUser = async (prevState: LoginState, formData: FormData) => {
@@ -123,6 +127,21 @@ export const loginUser = async (prevState: LoginState, formData: FormData) => {
   }
 
   const { email, password } = validatedData.data;
+
+  const existingUser = await getUserByEmail(email);
+
+  if (!existingUser || !existingUser.email || !existingUser.password) {
+    return { message: "Invalid Credentials: Email does not exist!" };
+  }
+
+  if (!existingUser.emailVerified) {
+    const verificationToken = await generateVerificationToken(
+      existingUser.email,
+    );
+    return {
+      message: "Please verify your Email first. Confirmation Email sent.",
+    };
+  }
 
   try {
     await signIn("credentials", {

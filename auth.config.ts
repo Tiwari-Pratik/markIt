@@ -87,14 +87,16 @@ export const authConfig = {
       }
     },
 
-    // async signIn({ user }) {
-    //   if (!user.id) return false;
-    //   const existingUser = await getUserById(user.id);
-    //   if (!existingUser || !existingUser.emailVerified) {
-    //     return false;
-    //   }
-    //   return true;
-    // },
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return true;
+
+      if (!user.id) return false;
+      const existingUser = await getUserById(user.id);
+      if (!existingUser || !existingUser.emailVerified) {
+        return false;
+      }
+      return true;
+    },
 
     async jwt({ token, account }) {
       // console.log({ token });
