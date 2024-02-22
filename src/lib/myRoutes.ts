@@ -1,5 +1,5 @@
 export const authRoutes: string[] = ["/login", "/register", "/login-error"];
-export const publicRoutes: string[] = [];
+export const publicRoutes: string[] = ["/new-verification"];
 
 export const privateRoutes: string[] = ["/"];
 

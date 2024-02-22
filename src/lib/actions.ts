@@ -14,6 +14,7 @@ import { signIn, signOut } from "../../auth";
 import { DEFAULT_LOGIN_REDIRECT } from "./myRoutes";
 import { AuthError } from "next-auth";
 import { generateVerificationToken } from "./tokens";
+import { sendVerificationEmail } from "./mail";
 
 // const LoginFormSchema = z.object({
 //   email: z
@@ -109,6 +110,8 @@ export const registerUser = async (
   // TODO: send verification token email
 
   const verificationToken = await generateVerificationToken(email);
+
+  await sendVerificationEmail(verificationToken.email, verificationToken.token);
   return { message: "Confirmation Email sent !" };
   // redirect("/");
 };
@@ -137,6 +140,10 @@ export const loginUser = async (prevState: LoginState, formData: FormData) => {
   if (!existingUser.emailVerified) {
     const verificationToken = await generateVerificationToken(
       existingUser.email,
+    );
+    await sendVerificationEmail(
+      verificationToken.email,
+      verificationToken.token,
     );
     return {
       message: "Please verify your Email first. Confirmation Email sent.",
