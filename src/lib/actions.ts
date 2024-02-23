@@ -3,18 +3,22 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { redirect } from "next/navigation";
-import { getUserByEmail } from "./data";
+import { getUserByEmail, getVerificationTokenByToken } from "./data";
 import {
   RegisterState,
   LoginState,
   LoginFormSchema,
   RegisterFormSchema,
+  ResetState,
+  ResetFormSchema,
+  ChangePasswordState,
+  ChangePasswordFormSchema,
 } from "./schema";
 import { signIn, signOut } from "../../auth";
 import { DEFAULT_LOGIN_REDIRECT } from "./myRoutes";
 import { AuthError } from "next-auth";
 import { generateVerificationToken } from "./tokens";
-import { sendVerificationEmail } from "./mail";
+import { sendPasswordResetEmail, sendVerificationEmail } from "./mail";
 
 // const LoginFormSchema = z.object({
 //   email: z
@@ -62,7 +66,7 @@ export const registerUser = async (
   prevState: RegisterState,
   formData: FormData,
 ) => {
-  console.log(Object.fromEntries(formData.entries()));
+  // console.log(Object.fromEntries(formData.entries()));
   const validatedData = RegisterFormSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -189,6 +193,154 @@ export const githubLogin = async () => {
 export const googleLogin = async () => {
   try {
     await signIn("google", { redirectTo: DEFAULT_LOGIN_REDIRECT });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const newEmailVerfication = async (token: string) => {
+  try {
+    const existingToken = await getVerificationTokenByToken(token);
+
+    if (!existingToken)
+      return { message: "Token does not exist", success: false };
+
+    const hasExpired = new Date(existingToken.expires) < new Date();
+
+    if (hasExpired) return { message: "Token has expired", success: false };
+
+    const existingUser = await getUserByEmail(existingToken.email);
+
+    if (!existingUser)
+      return { message: "Email does not exist", success: false };
+
+    await db.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        emailVerified: new Date(),
+        email: existingToken.email,
+      },
+    });
+
+    await db.verificationToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    });
+
+    return { message: "Email Verified", success: true };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const resetPassword = async (
+  prevState: ResetState,
+  formData: FormData,
+) => {
+  const validatedData = ResetFormSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!validatedData.success) {
+    return {
+      message: "Failed to send Email",
+      errors: validatedData.error.flatten().fieldErrors,
+    };
+  }
+
+  const { email } = validatedData.data;
+  try {
+    const existingUser = await getUserByEmail(email);
+
+    if (!existingUser || !existingUser.email || !existingUser.password) {
+      return { message: "Invalid Credentials: Email does not exist!" };
+    }
+
+    if (!existingUser.emailVerified) {
+      const verificationToken = await generateVerificationToken(
+        existingUser.email,
+      );
+      await sendVerificationEmail(
+        verificationToken.email,
+        verificationToken.token,
+      );
+      return {
+        message:
+          "your Email is not verified. Please verify your Email first. Confirmation Email sent.",
+      };
+    }
+
+    const verificationToken = await generateVerificationToken(
+      existingUser.email,
+    );
+    await sendPasswordResetEmail(
+      verificationToken.email,
+      verificationToken.token,
+    );
+    return {
+      message: "Password reset email sent!",
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const changePassword = async (
+  token: string,
+  prevState: ChangePasswordState,
+  formData: FormData,
+) => {
+  const validatedData = ChangePasswordFormSchema.safeParse({
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!validatedData.success) {
+    return {
+      message: "Failed to change password",
+      errors: validatedData.error.flatten().fieldErrors,
+      success: false,
+    };
+  }
+
+  const { password } = validatedData.data;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const existingToken = await getVerificationTokenByToken(token);
+
+    if (!existingToken)
+      return { message: "Token does not exist", success: false };
+
+    const hasExpired = new Date(existingToken.expires) < new Date();
+
+    if (hasExpired) return { message: "Token has expired", success: false };
+
+    const existingUser = await getUserByEmail(existingToken.email);
+
+    if (!existingUser)
+      return { message: "Email does not exist", success: false };
+
+    await db.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        email: existingToken.email,
+        password: hashedPassword,
+      },
+    });
+
+    await db.verificationToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    });
+
+    return { message: "Password changed successfully", success: true };
   } catch (error) {
     throw error;
   }

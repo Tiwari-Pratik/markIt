@@ -109,6 +109,9 @@ export default function Login() {
                     </p>
                   ))}
               </div>
+              <Button variant="link" size="sm">
+                <Link href="/reset-password">Forgot password?</Link>{" "}
+              </Button>
               <div
                 id="custom-error-message"
                 aria-live="polite"
