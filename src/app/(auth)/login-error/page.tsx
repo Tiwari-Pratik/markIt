@@ -1,4 +1,4 @@
-import LoginError from "../mycomponents/authentication/loginError";
+import LoginError from "../../mycomponents/authentication/loginError";
 
 interface Props {
   searchParams: {

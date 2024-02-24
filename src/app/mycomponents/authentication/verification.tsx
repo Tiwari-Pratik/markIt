@@ -1,11 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { BeatLoader } from "react-spinners";
 import styles from "./verification.module.css";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { newEmailVerfication } from "@/lib/actions";
 
 const VerificationEmailForm = () => {

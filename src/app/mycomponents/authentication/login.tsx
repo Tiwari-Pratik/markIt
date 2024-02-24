@@ -21,6 +21,7 @@ import { useFormState } from "react-dom";
 import { githubLogin, googleLogin, loginUser } from "@/lib/actions";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import SubmitButton from "./submitButton";
 
 export default function Login() {
   const initialState: LoginState = { message: null, errors: {} };
@@ -122,9 +123,11 @@ export default function Login() {
                 )}
               </div>
               <CardFooter className="mt-8 flex gap-2">
-                <Button type="submit" className="flex-1">
+                {/*               <Button type="submit" className="flex-1">
                   Sign in
                 </Button>
+                */}
+                <SubmitButton />
               </CardFooter>
             </form>
 

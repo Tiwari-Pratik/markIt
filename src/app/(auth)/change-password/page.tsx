@@ -1,4 +1,4 @@
-import ChangePasswordForm from "../mycomponents/authentication/changePassword";
+import ChangePasswordForm from "../../mycomponents/authentication/changePassword";
 
 const ChangePasswordPage = () => {
   return <ChangePasswordForm />;

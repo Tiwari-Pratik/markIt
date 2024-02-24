@@ -1,8 +1,6 @@
 "use server";
-import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
-import { redirect } from "next/navigation";
 import { getUserByEmail, getVerificationTokenByToken } from "./data";
 import {
   RegisterState,
@@ -313,7 +311,11 @@ export const changePassword = async (
     const existingToken = await getVerificationTokenByToken(token);
 
     if (!existingToken)
-      return { message: "Token does not exist", success: false };
+      return {
+        message:
+          "Token does not exist. You are not authorized to change password",
+        success: false,
+      };
 
     const hasExpired = new Date(existingToken.expires) < new Date();
 

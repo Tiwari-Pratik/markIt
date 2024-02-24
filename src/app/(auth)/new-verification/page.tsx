@@ -1,4 +1,4 @@
-import VerificationEmailForm from "../mycomponents/authentication/verification";
+import VerificationEmailForm from "../../mycomponents/authentication/verification";
 
 const NewVerificationPage = () => {
   return <VerificationEmailForm />;

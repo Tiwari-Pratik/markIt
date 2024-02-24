@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChangePasswordState } from "@/lib/schema";
 import { useFormState } from "react-dom";
-import { changePassword, registerUser } from "@/lib/actions";
+import { changePassword } from "@/lib/actions";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
